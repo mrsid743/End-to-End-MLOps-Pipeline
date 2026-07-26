@@ -46,30 +46,22 @@ jobs:
           # Pushes both the unique commit SHA and a floating latest tag
           tags: ${{ env.DOCKER_IMAGE }}:${{ github.sha }},${{ env.DOCKER_IMAGE }}:latest
 
-  deploy:
-    needs: test-and-build
-    runs-on: ubuntu-latest
-    # Only deploy on push to main, not on PRs
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Kubernetes context
-        uses: azure/k8s-set-context@v3
-        with:
-          # You need to store your Kubeconfig as a secret in GitHub Actions
-          kubeconfig: ${{ secrets.KUBECONFIG }}
-
-      - name: Deploy to Kubernetes
-        run: |
-          # Robust replacement: Finds ANY tag in your deployment.yaml and forces the new Git SHA
-          sed -i -E "s|image: ${{ env.DOCKER_IMAGE }}:.*|image: ${{ env.DOCKER_IMAGE }}:${{ github.sha }}|g" k8s/deployment.yaml
-          
-          # Apply the manifests
-          kubectl apply -f k8s/deployment.yaml
-          kubectl apply -f k8s/service.yaml
-          
-          # Check rollout status
-          kubectl rollout status deployment/ml-model-deployment
+  # Deployment job disabled for local Minikube environment.
+  # To update your cluster after a successful build, use: kubectl rollout restart deployment/ml-model-deployment
+  # deploy:
+  #   needs: test-and-build
+  #   runs-on: ubuntu-latest
+  #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #     - name: Set up Kubernetes context
+  #       uses: azure/k8s-set-context@v3
+  #       with:
+  #         kubeconfig: ${{ secrets.KUBECONFIG }}
+  #     - name: Deploy to Kubernetes
+  #       run: |
+  #         sed -i -E "s|image: ${{ env.DOCKER_IMAGE }}:.*|image: ${{ env.DOCKER_IMAGE }}:${{ github.sha }}|g" k8s/deployment.yaml
+  #         kubectl apply -f k8s/deployment.yaml
+  #         kubectl apply -f k8s/service.yaml
+  #         kubectl rollout status deployment/ml-model-deployment
