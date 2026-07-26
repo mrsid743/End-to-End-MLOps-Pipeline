@@ -1,0 +1,33 @@
+# Python & Virtual Environments
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environment Variables & Secrets
+.env
+.env.*
+secrets/
+
+# MLflow & Machine Learning Artifacts
+mlruns/
+mlartifacts/
+*.pkl
+*.skops
+*.model
+
+# Docker
+.dockerignore
+
+# PyTest & Coverage (If you add tests later)
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE & OS Specific
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
